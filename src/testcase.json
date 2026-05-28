@@ -1,0 +1,1307 @@
+[
+  {
+    "name": "test_no_children_fixed_position",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 10, "y": 10 },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 10, "y": 10, "w": 100, "h": 100, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_one_children_fixed_position",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 10, "y": 10 },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "layout": "stack",
+        "first_children": 1,
+        "last_children": 1,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 10, "y": 10 },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 10, "y": 10, "w": 100, "h": 100, "painter": { "kind": "none" } },
+      { "x": 20, "y": 20, "w": 50, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_root_fitting_to_one_children",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fit" }],
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 100, "h": 50, "painter": { "kind": "none" } },
+      { "x": 0, "y": 0, "w": 50, "h": 50, "painter": { "kind": "none" } },
+      { "x": 50, "y": 0, "w": 50, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_root_fitting_to_one_children_in_vertical",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fit" }],
+        "layout": "vertical",
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      { "x": 0, "y": 0, "w": 50, "h": 50, "painter": { "kind": "none" } },
+      { "x": 0, "y": 50, "w": 50, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_nested_children_fixed_positions",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 10, "y": 15 },
+        "size": [
+          { "kind": "fixed", "size": 200 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": 1,
+        "last_children": 1,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 10, "y": 15 },
+        "size": [
+          { "kind": "fixed", "size": 150 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": 2,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 5, "y": 5 },
+        "size": [
+          { "kind": "fixed", "size": 20 },
+          { "kind": "fixed", "size": 20 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 10, "y": 15, "w": 200, "h": 100, "painter": { "kind": "none" } },
+      { "x": 20, "y": 30, "w": 150, "h": 50, "painter": { "kind": "none" } },
+      { "x": 25, "y": 35, "w": 20, "h": 20, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_nested_children_fixed_positions_and_padding",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 10, "y": 15 },
+        "size": [
+          { "kind": "fixed", "size": 200 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "padding": { "left": 10, "right": 0, "top": 20, "bottom": 0 },
+        "first_children": 1,
+        "last_children": 1,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 10, "y": 15 },
+        "size": [
+          { "kind": "fixed", "size": 150 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": 2,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "pos": { "x": 5, "y": 5 },
+        "size": [
+          { "kind": "fixed", "size": 20 },
+          { "kind": "fixed", "size": 20 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 10, "y": 15, "w": 200, "h": 100, "painter": { "kind": "none" } },
+      { "x": 30, "y": 50, "w": 150, "h": 50, "painter": { "kind": "none" } },
+      { "x": 35, "y": 55, "w": 20, "h": 20, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_horizontal_layout_with_margin",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 200 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "margin": 10,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 200, "h": 100, "painter": { "kind": "none" } },
+      { "x": 0, "y": 0, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      { "x": 60, "y": 0, "w": 100, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_vertical_layout_with_spacing",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 200 },
+          { "kind": "fixed", "size": 300 }
+        ],
+        "layout": "vertical",
+        "margin": 10,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 200, "h": 300, "painter": { "kind": "none" } },
+      { "x": 0, "y": 0, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      { "x": 0, "y": 110, "w": 100, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_horizontal_layout_with_margin_and_root_fitting",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 180, "h": 120, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      { "x": 70, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_grow_children_between_two_fixed_size_in_horizontal",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fixed", "size": 450 }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 3,
+        "first_children": 1,
+        "last_children": 3,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 450, "h": 120, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      { "x": 70, "y": 10, "w": 260, "h": 100, "painter": { "kind": "none" } },
+      { "x": 340, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_grow_children_between_two_fixed_size_in_vertical",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fixed", "size": 450 }],
+        "layout": "vertical",
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 3,
+        "first_children": 1,
+        "last_children": 3,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 120, "h": 450, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } },
+      { "x": 10, "y": 70, "w": 100, "h": 260, "painter": { "kind": "none" } },
+      { "x": 10, "y": 340, "w": 50, "h": 100, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_two_grow_children_between_two_fixed_size_in_horizontal_with_starting_size",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fixed", "size": 450 }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 4,
+        "first_children": 1,
+        "last_children": 4,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "img", "source": "10x15" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 4
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 450, "h": 120, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      {
+        "x": 70,
+        "y": 10,
+        "w": 125,
+        "h": 100,
+        "painter": { "kind": "img", "source": "10x15" }
+      },
+      { "x": 205, "y": 10, "w": 125, "h": 100, "painter": { "kind": "none" } },
+      { "x": 340, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_two_grow_children_between_two_fixed_size_in_vertical_with_starting_size",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fixed", "size": 450 }],
+        "layout": "vertical",
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 4,
+        "first_children": 1,
+        "last_children": 4,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "img", "source": "10x15" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 4
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 120, "h": 450, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } },
+      { "x": 10, "y": 70, "w": 100, "h": 125, "painter": { "kind": "none" } },
+      {
+        "x": 10,
+        "y": 205,
+        "w": 100,
+        "h": 125,
+        "painter": { "kind": "img", "source": "10x15" }
+      },
+      { "x": 10, "y": 340, "w": 50, "h": 100, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_two_grow_children_between_two_fixed_size_in_horizontal_with_one_shrinking",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fixed", "size": 450 }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 4,
+        "first_children": 1,
+        "last_children": 4,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "img", "source": "500x15" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 4
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 450, "h": 410, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      {
+        "x": 70,
+        "y": 10,
+        "w": 125,
+        "h": 390,
+        "painter": { "kind": "img", "source": "500x15" }
+      },
+      { "x": 205, "y": 10, "w": 125, "h": 390, "painter": { "kind": "none" } },
+      { "x": 340, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_two_grow_children_between_two_fixed_size_in_vertical_with_one_shrinking",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fixed", "size": 450 }],
+        "layout": "vertical",
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 4,
+        "first_children": 1,
+        "last_children": 4,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "img", "source": "10x500" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 4
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 120, "h": 450, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } },
+      { "x": 10, "y": 70, "w": 100, "h": 125, "painter": { "kind": "none" } },
+      {
+        "x": 10,
+        "y": 205,
+        "w": 100,
+        "h": 125,
+        "painter": { "kind": "img", "source": "10x500" }
+      },
+      { "x": 10, "y": 340, "w": 50, "h": 100, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_centered_alignment",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 400 },
+          { "kind": "fixed", "size": 400 }
+        ],
+        "align": { "x": "middle", "y": "middle" },
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 400, "h": 400, "painter": { "kind": "none" } },
+      { "x": 120, "y": 175, "w": 100, "h": 50, "painter": { "kind": "none" } },
+      { "x": 230, "y": 150, "w": 50, "h": 100, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_bottom_left_alignment",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 400 },
+          { "kind": "fixed", "size": 400 }
+        ],
+        "align": { "x": "begin", "y": "end" },
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 400, "h": 400, "painter": { "kind": "none" } },
+      { "x": 10, "y": 340, "w": 100, "h": 50, "painter": { "kind": "none" } },
+      { "x": 120, "y": 290, "w": 50, "h": 100, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_shrink_to_min_size",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 200 },
+          { "kind": "fixed", "size": 200 }
+        ],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "img", "source": "200x200" },
+        "size": [
+          { "kind": "grow", "min": 100 },
+          { "kind": "grow", "min": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "img", "source": "200x200" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 200, "h": 200, "painter": { "kind": "none" } },
+      {
+        "x": 10,
+        "y": 10,
+        "w": 100,
+        "h": 180,
+        "painter": { "kind": "img", "source": "200x200" }
+      },
+      {
+        "x": 120,
+        "y": 10,
+        "w": 70,
+        "h": 180,
+        "painter": { "kind": "img", "source": "200x200" }
+      }
+    ]
+  },
+  {
+    "name": "test_fit_to_min_size",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fit", "min": 100 },
+          { "kind": "fit", "min": 200 }
+        ],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 1,
+        "first_children": 1,
+        "last_children": 1,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 100, "h": 200, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_dont_shrink_min_size",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 100, "h": 100, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 100, "painter": { "kind": "none" } },
+      { "x": 70, "y": 10, "w": 50, "h": 100, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_dont_grow_over_max_size",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fixed", "size": 450 }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "grow", "max": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "grow", "max": 50 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 450, "h": 70, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 50, "painter": { "kind": "none" } },
+      { "x": 70, "y": 10, "w": 50, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_dont_grow_over_pref_width",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fixed", "size": 450 }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "img", "source": "50x50" },
+        "size": [
+          { "kind": "grow", "pref_use": "to_max" },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "fixed", "size": 50 }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 450, "h": 70, "painter": { "kind": "none" } },
+      {
+        "x": 10,
+        "y": 10,
+        "w": 50,
+        "h": 50,
+        "painter": { "kind": "img", "source": "50x50" }
+      },
+      { "x": 70, "y": 10, "w": 370, "h": 50, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_dont_fit_over_max_width_size",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit", "max": 100 }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "img", "source": "100x100" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "img", "source": "100x100" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 100, "h": 185, "painter": { "kind": "none" } },
+      {
+        "x": 10,
+        "y": 10,
+        "w": 35,
+        "h": 165,
+        "painter": { "kind": "img", "source": "100x100" }
+      },
+      {
+        "x": 55,
+        "y": 10,
+        "w": 35,
+        "h": 165,
+        "painter": { "kind": "img", "source": "100x100" }
+      }
+    ]
+  },
+  {
+    "name": "test_one_line_basic_table_example",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fit" }],
+        "layout": "vertical",
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 1,
+        "first_children": 1,
+        "last_children": 1,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 2,
+        "last_children": 3,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "img", "source": "100x25" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 25 },
+          { "kind": "fixed", "size": 25 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 175, "h": 65, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 155, "h": 45, "painter": { "kind": "none" } },
+      {
+        "x": 20,
+        "y": 20,
+        "w": 100,
+        "h": 25,
+        "painter": { "kind": "img", "source": "100x25" }
+      },
+      { "x": 130, "y": 20, "w": 25, "h": 25, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_two_line_basic_table_example",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fit" }],
+        "layout": "vertical",
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 4,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 2,
+        "last_children": 3,
+        "next": 4
+      },
+      {
+        "painter": { "kind": "img", "source": "100x25" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 25 },
+          { "kind": "fixed", "size": 25 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 5,
+        "last_children": 6,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "img", "source": "25x25" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 6
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 25 },
+          { "kind": "fixed", "size": 25 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 175, "h": 120, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 155, "h": 45, "painter": { "kind": "none" } },
+      {
+        "x": 20,
+        "y": 20,
+        "w": 100,
+        "h": 25,
+        "painter": { "kind": "img", "source": "100x25" }
+      },
+      { "x": 130, "y": 20, "w": 25, "h": 25, "painter": { "kind": "none" } },
+      { "x": 10, "y": 65, "w": 155, "h": 45, "painter": { "kind": "none" } },
+      {
+        "x": 20,
+        "y": 75,
+        "w": 100,
+        "h": 25,
+        "painter": { "kind": "img", "source": "25x25" }
+      },
+      { "x": 130, "y": 75, "w": 25, "h": 25, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_two_line_basic_table_example_reverse_order",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fit" }],
+        "layout": "vertical",
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 4,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 2,
+        "last_children": 3,
+        "next": 4
+      },
+      {
+        "painter": { "kind": "img", "source": "100x25" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 3
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 25 },
+          { "kind": "fixed", "size": 25 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "grow" }, { "kind": "fit" }],
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 5,
+        "last_children": 6,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "img", "source": "25x25" },
+        "size": [{ "kind": "grow" }, { "kind": "grow" }],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 6
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 25 },
+          { "kind": "fixed", "size": 25 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 175, "h": 120, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 155, "h": 45, "painter": { "kind": "none" } },
+      {
+        "x": 20,
+        "y": 20,
+        "w": 100,
+        "h": 25,
+        "painter": { "kind": "img", "source": "100x25" }
+      },
+      { "x": 130, "y": 20, "w": 25, "h": 25, "painter": { "kind": "none" } },
+      { "x": 10, "y": 65, "w": 155, "h": 45, "painter": { "kind": "none" } },
+      {
+        "x": 20,
+        "y": 75,
+        "w": 100,
+        "h": 25,
+        "painter": { "kind": "img", "source": "25x25" }
+      },
+      { "x": 130, "y": 75, "w": 25, "h": 25, "painter": { "kind": "none" } }
+    ]
+  },
+  {
+    "name": "test_stack_layout",
+    "nodes": [
+      {
+        "painter": { "kind": "none" },
+        "size": [{ "kind": "fit" }, { "kind": "fit" }],
+        "layout": "stack",
+        "margin": 10,
+        "padding": { "left": 10, "right": 10, "top": 10, "bottom": 10 },
+        "children_count": 2,
+        "first_children": 1,
+        "last_children": 2,
+        "next": -1
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 100 },
+          { "kind": "fixed", "size": 50 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": 2
+      },
+      {
+        "painter": { "kind": "none" },
+        "size": [
+          { "kind": "fixed", "size": 50 },
+          { "kind": "fixed", "size": 100 }
+        ],
+        "first_children": -1,
+        "last_children": -1,
+        "next": -1
+      }
+    ],
+    "expected": [
+      { "x": 0, "y": 0, "w": 120, "h": 120, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 100, "h": 50, "painter": { "kind": "none" } },
+      { "x": 10, "y": 10, "w": 50, "h": 100, "painter": { "kind": "none" } }
+    ]
+  }
+]
