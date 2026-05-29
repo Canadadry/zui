@@ -26,6 +26,11 @@ fn Node(comptime T: type, comptime default_painter: T) type {
             min: i32 = 0,
             max: i32 = 0,
             pref_use: SizePrefUseKind = .none,
+            bound: struct {
+                min: i32 = 0,
+                max: i32 = 0,
+                pref_use: SizePrefUseKind = .none,
+            } = .{},
         } = .{ .{}, .{} },
         layout: LayoutKind = .vertical,
         spacing: i32 = 0,
@@ -50,6 +55,19 @@ fn Node(comptime T: type, comptime default_painter: T) type {
         first_children: ?NodeIndex = null,
         last_children: ?NodeIndex = null,
         next: ?NodeIndex = null,
+
+        pub fn fit_width_sizing(el: *@This(), min: i32, max: i32) void {
+            el.computed_box.w += el.padding.left + el.padding.right;
+            if (el.layout == .horizontal) {
+                el.computed_box.w += (el.children_count - 1) * el.margin;
+            }
+            if (el.computed_box.w < min) {
+                el.computed_box.w = min;
+            }
+            if (el.computed_box.w > max and max > 0) {
+                el.computed_box.w = max;
+            }
+        }
     };
 }
 
@@ -114,9 +132,32 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         }
 
         pub fn compute_fit_size_width(tree: *@This(), idx: NodeIndex, parent_idx: ?NodeIndex) void {
-            _ = tree;
-            _ = idx;
-            _ = parent_idx;
+            const el = &tree.nodes.items[idx];
+            var child_id = tree.nodes.items[idx].first_children;
+            while (child_id) |c_id| {
+                compute_fit_size_width(tree, c_id, idx);
+                child_id = tree.nodes.items[c_id].next;
+            }
+            const content_width: i32 = 0.0;
+            switch (el.size[0].kind) {
+                .fixed => el.computed_box.w = el.size[0].size,
+                .fit => el.fit_width_sizing(el.size[0].bound.min, el.size[0].bound.max),
+                .grow => {
+                    //content_width = tree.mesure_content_fn(tree.mesure_content_userdata, el.painter).x;
+                    if (el.size[0].bound.pref_use == .to_max) {
+                        el.size[0].bound.max = content_width;
+                    }
+                    el.fit_width_sizing(el.size[0].bound.min, el.size[0].bound.max);
+                    el.computed_box.w = @max(el.computed_box.w, content_width);
+                },
+            }
+
+            const p_id = parent_idx orelse return;
+
+            switch (tree.nodes.items[p_id].layout) {
+                .horizontal => tree.nodes.items[p_id].computed_box.w += el.computed_box.w,
+                .vertical, .stack => tree.nodes.items[p_id].computed_box.w = @max(el.computed_box.w, tree.nodes.items[p_id].computed_box.w),
+            }
         }
 
         pub fn compute_shrink_size_width(tree: *@This(), idx: NodeIndex) void {
