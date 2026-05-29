@@ -3,8 +3,15 @@ const std = @import("std");
 const SizeKind = enum { fixed, fit, grow };
 const SizePrefUseKind = enum { none, to_max };
 const LayoutKind = enum { vertical, horizontal, stack };
-const AlignXKind = enum { begin, middle, end };
-const AlignYKind = enum { begin, middle, end };
+const AlignKind = enum { begin, middle, end };
+
+pub fn compute_align(a: AlignKind, remaining: i32) i32 {
+    return switch (a) {
+        .begin => 0,
+        .middle => remaining >> 1,
+        .end => remaining,
+    };
+}
 
 fn Node(comptime T: type, comptime default_painter: T) type {
     return struct {
@@ -24,8 +31,8 @@ fn Node(comptime T: type, comptime default_painter: T) type {
         spacing: i32 = 0,
         margin: i32 = 0,
         @"align": struct {
-            x: AlignXKind = .begin,
-            y: AlignYKind = .begin,
+            x: AlignKind = .begin,
+            y: AlignKind = .begin,
         } = .{},
         padding: struct {
             left: i32 = 0,
@@ -143,10 +150,87 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         }
 
         pub fn compute_position(tree: *@This(), idx: NodeIndex, x: i32, y: i32) void {
-            _ = tree;
-            _ = idx;
-            _ = x;
-            _ = y;
+            const self = &tree.nodes.items[idx];
+            const remaining_across: [2]i32 = tree.get_remaining(idx);
+            var remaining_along: i32 = 0;
+
+            var @"align": [2]i32 = .{
+                compute_align(self.@"align".x, remaining_across[0]),
+                compute_align(self.@"align".y, remaining_across[1]),
+            };
+
+            self.computed_box.x = self.pos.x + x;
+            self.computed_box.y = self.pos.y + y;
+
+            var offset: [2]i32 = .{
+                self.padding.left,
+                self.padding.top,
+            };
+            var child_id: ?NodeIndex = self.first_children;
+            while (child_id) |c_id| {
+                const child = &tree.nodes.items[c_id];
+                switch (self.layout) {
+                    .horizontal => {
+                        remaining_along =
+                            self.computed_box.h - self.padding.top - self.padding.bottom - child.computed_box.h;
+                        @"align"[1] = compute_align(self.@"align".y, remaining_along);
+                    },
+                    .vertical => {
+                        remaining_along =
+                            self.computed_box.w - self.padding.left - self.padding.right - child.computed_box.w;
+                        @"align"[0] = compute_align(self.@"align".x, remaining_along);
+                    },
+                    .stack => {
+                        remaining_along =
+                            self.computed_box.h - self.padding.top - self.padding.bottom - child.computed_box.h;
+                        @"align"[1] = compute_align(self.@"align".y, remaining_along);
+                        remaining_along =
+                            self.computed_box.w - self.padding.left - self.padding.right - child.computed_box.w;
+                        @"align"[0] = compute_align(self.@"align".x, remaining_along);
+                    },
+                }
+                compute_position(tree, c_id, self.computed_box.x + offset[0] + @"align"[0], self.computed_box.y + offset[1] + @"align"[1]);
+                switch (self.layout) {
+                    .horizontal => offset[0] += child.computed_box.w + self.margin,
+                    .vertical => offset[1] += child.computed_box.h + self.margin,
+                    .stack => {},
+                }
+                child_id = child.next;
+            }
+        }
+
+        pub fn get_remaining(tree: *@This(), parent_id: NodeIndex) [2]i32 {
+            const parent = &tree.nodes.items[parent_id];
+            var remaining = .{
+                parent.computed_box.w - parent.padding.left - parent.padding.right,
+                parent.computed_box.h - parent.padding.top - parent.padding.bottom,
+            };
+
+            if (parent.children_count == 0) {
+                return remaining;
+            }
+
+            var child_id: ?NodeIndex = null;
+            switch (parent.layout) {
+                .horizontal => {
+                    child_id = parent.first_children;
+                    while (child_id) |c_id| {
+                        remaining[0] -= tree.nodes.items[c_id].computed_box.w;
+                        child_id = tree.nodes.items[c_id].next;
+                    }
+                    remaining[0] -= (parent.children_count - 1) * parent.margin;
+                },
+                .vertical => {
+                    child_id = parent.first_children;
+                    while (child_id) |c_id| {
+                        remaining[1] -= tree.nodes.items[c_id].computed_box.h;
+                        child_id = tree.nodes.items[c_id].next;
+                    }
+                    remaining[1] -= (parent.children_count - 1) * parent.margin;
+                },
+                .stack => {},
+            }
+            return remaining;
         }
 
         pub fn compute_draw_command(tree: *@This(), idx: NodeIndex) !void {
