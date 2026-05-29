@@ -9,9 +9,9 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -31,7 +31,7 @@
         "layout": "stack",
         "first_children": 1,
         "last_children": 1,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -40,9 +40,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -58,7 +58,7 @@
         "size": [{ "kind": "fit" }, { "kind": "fit" }],
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -66,8 +66,8 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -76,9 +76,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -96,7 +96,7 @@
         "layout": "vertical",
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -104,8 +104,8 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -114,9 +114,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -137,7 +137,7 @@
         ],
         "first_children": 1,
         "last_children": 1,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -148,7 +148,7 @@
         ],
         "first_children": 2,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -157,9 +157,9 @@
           { "kind": "fixed", "size": 20 },
           { "kind": "fixed", "size": 20 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -181,7 +181,7 @@
         "padding": { "left": 10, "right": 0, "top": 20, "bottom": 0 },
         "first_children": 1,
         "last_children": 1,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -192,7 +192,7 @@
         ],
         "first_children": 2,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -201,9 +201,9 @@
           { "kind": "fixed", "size": 20 },
           { "kind": "fixed", "size": 20 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -224,7 +224,7 @@
         "margin": 10,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -232,8 +232,8 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -242,9 +242,9 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -266,7 +266,7 @@
         "margin": 10,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -274,8 +274,8 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -284,9 +284,9 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -306,7 +306,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -314,8 +314,8 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -324,9 +324,9 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -346,7 +346,7 @@
         "children_count": 3,
         "first_children": 1,
         "last_children": 3,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -354,15 +354,15 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "none" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
@@ -371,9 +371,9 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -395,7 +395,7 @@
         "children_count": 3,
         "first_children": 1,
         "last_children": 3,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -403,15 +403,15 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "none" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
@@ -420,9 +420,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -443,7 +443,7 @@
         "children_count": 4,
         "first_children": 1,
         "last_children": 4,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -451,22 +451,22 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "img", "source": "10x15" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
         "painter": { "kind": "none" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 4
       },
       {
@@ -475,9 +475,9 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -506,7 +506,7 @@
         "children_count": 4,
         "first_children": 1,
         "last_children": 4,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -514,22 +514,22 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "none" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
         "painter": { "kind": "img", "source": "10x15" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 4
       },
       {
@@ -538,9 +538,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -568,7 +568,7 @@
         "children_count": 4,
         "first_children": 1,
         "last_children": 4,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -576,22 +576,22 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "img", "source": "500x15" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
         "painter": { "kind": "none" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 4
       },
       {
@@ -600,9 +600,9 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -631,7 +631,7 @@
         "children_count": 4,
         "first_children": 1,
         "last_children": 4,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -639,22 +639,22 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "none" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
         "painter": { "kind": "img", "source": "10x500" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 4
       },
       {
@@ -663,9 +663,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -697,7 +697,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -705,8 +705,8 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -715,9 +715,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -741,7 +741,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -749,8 +749,8 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -759,9 +759,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -784,7 +784,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "img", "source": "200x200" },
@@ -792,16 +792,16 @@
           { "kind": "grow", "min": 100 },
           { "kind": "grow", "min": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "img", "source": "200x200" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -836,7 +836,7 @@
         "children_count": 1,
         "first_children": 1,
         "last_children": 1,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -844,9 +844,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -868,7 +868,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -876,8 +876,8 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -886,9 +886,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -908,7 +908,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -916,8 +916,8 @@
           { "kind": "grow", "max": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -926,9 +926,9 @@
           { "kind": "grow", "max": 50 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -948,7 +948,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "img", "source": "50x50" },
@@ -956,16 +956,16 @@
           { "kind": "grow", "pref_use": "to_max" },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "none" },
         "size": [{ "kind": "grow" }, { "kind": "fixed", "size": 50 }],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -991,21 +991,21 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "img", "source": "100x100" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
         "painter": { "kind": "img", "source": "100x100" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -1038,7 +1038,7 @@
         "children_count": 1,
         "first_children": 1,
         "last_children": 1,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -1048,13 +1048,13 @@
         "children_count": 2,
         "first_children": 2,
         "last_children": 3,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "img", "source": "100x25" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
@@ -1063,9 +1063,9 @@
           { "kind": "fixed", "size": 25 },
           { "kind": "fixed", "size": 25 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -1093,7 +1093,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 4,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -1108,8 +1108,8 @@
       {
         "painter": { "kind": "img", "source": "100x25" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
@@ -1118,9 +1118,9 @@
           { "kind": "fixed", "size": 25 },
           { "kind": "fixed", "size": 25 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -1130,13 +1130,13 @@
         "children_count": 2,
         "first_children": 5,
         "last_children": 6,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "img", "source": "25x25" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 6
       },
       {
@@ -1145,9 +1145,9 @@
           { "kind": "fixed", "size": 25 },
           { "kind": "fixed", "size": 25 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -1184,7 +1184,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 4,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -1199,8 +1199,8 @@
       {
         "painter": { "kind": "img", "source": "100x25" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 3
       },
       {
@@ -1209,9 +1209,9 @@
           { "kind": "fixed", "size": 25 },
           { "kind": "fixed", "size": 25 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -1221,13 +1221,13 @@
         "children_count": 2,
         "first_children": 5,
         "last_children": 6,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "img", "source": "25x25" },
         "size": [{ "kind": "grow" }, { "kind": "grow" }],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 6
       },
       {
@@ -1236,9 +1236,9 @@
           { "kind": "fixed", "size": 25 },
           { "kind": "fixed", "size": 25 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [
@@ -1275,7 +1275,7 @@
         "children_count": 2,
         "first_children": 1,
         "last_children": 2,
-        "next": -1
+        "next": null
       },
       {
         "painter": { "kind": "none" },
@@ -1283,8 +1283,8 @@
           { "kind": "fixed", "size": 100 },
           { "kind": "fixed", "size": 50 }
         ],
-        "first_children": -1,
-        "last_children": -1,
+        "first_children": null,
+        "last_children": null,
         "next": 2
       },
       {
@@ -1293,9 +1293,9 @@
           { "kind": "fixed", "size": 50 },
           { "kind": "fixed", "size": 100 }
         ],
-        "first_children": -1,
-        "last_children": -1,
-        "next": -1
+        "first_children": null,
+        "last_children": null,
+        "next": null
       }
     ],
     "expected": [

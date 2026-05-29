@@ -33,14 +33,20 @@ fn Node(comptime T: type, comptime default_painter: T) type {
             top: i32 = 0,
             bottom: i32 = 0,
         } = .{},
+        computed_box: struct {
+            x: i32 = 0,
+            y: i32 = 0,
+            w: i32 = 0,
+            h: i32 = 0,
+        } = .{},
         children_count: i32 = 0,
-        first_children: i32 = -1,
-        last_children: i32 = -1,
-        next: i32 = -1,
+        first_children: ?NodeIndex = null,
+        last_children: ?NodeIndex = null,
+        next: ?NodeIndex = null,
     };
 }
 
-const NodeIndex = i32;
+const NodeIndex = usize;
 const Growable = struct {
     id: NodeIndex,
     val: i32,
@@ -82,14 +88,80 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             tree.sorted_growables.deinit();
         }
 
-        pub fn compute(tree: *@This(), head: NodeIndex) void {
-            _ = tree;
-            _ = head;
+        pub fn compute(tree: *@This(), head: NodeIndex) !void {
+            tree.compute_fit_size_width(head, null);
+            tree.compute_shrink_size_width(head);
+            tree.compute_grow_size_width(head);
+            tree.compute_wrap(head);
+            tree.compute_fit_size_height(head, null);
+            tree.compute_shrink_size_height(head);
+            tree.compute_grow_size_height(head);
+            tree.compute_position(head, 0, 0);
+            try tree.compute_draw_command(head);
         }
+
         pub fn link_child(tree: *@This(), parent: NodeIndex, child: NodeIndex) void {
             _ = tree;
             _ = parent;
             _ = child;
+        }
+
+        pub fn compute_fit_size_width(tree: *@This(), idx: NodeIndex, parent_idx: ?NodeIndex) void {
+            _ = tree;
+            _ = idx;
+            _ = parent_idx;
+        }
+
+        pub fn compute_shrink_size_width(tree: *@This(), idx: NodeIndex) void {
+            _ = tree;
+            _ = idx;
+        }
+
+        pub fn compute_grow_size_width(tree: *@This(), idx: NodeIndex) void {
+            _ = tree;
+            _ = idx;
+        }
+
+        pub fn compute_wrap(tree: *@This(), idx: NodeIndex) void {
+            _ = tree;
+            _ = idx;
+        }
+
+        pub fn compute_fit_size_height(tree: *@This(), idx: NodeIndex, parent_idx: ?NodeIndex) void {
+            _ = tree;
+            _ = idx;
+            _ = parent_idx;
+        }
+        pub fn compute_shrink_size_height(tree: *@This(), idx: NodeIndex) void {
+            _ = tree;
+            _ = idx;
+        }
+
+        pub fn compute_grow_size_height(tree: *@This(), idx: NodeIndex) void {
+            _ = tree;
+            _ = idx;
+        }
+
+        pub fn compute_position(tree: *@This(), idx: NodeIndex, x: i32, y: i32) void {
+            _ = tree;
+            _ = idx;
+            _ = x;
+            _ = y;
+        }
+
+        pub fn compute_draw_command(tree: *@This(), idx: NodeIndex) !void {
+            try tree.commands.append(.{
+                .x = tree.nodes.items[idx].computed_box.x,
+                .y = tree.nodes.items[idx].computed_box.y,
+                .w = tree.nodes.items[idx].computed_box.w,
+                .h = tree.nodes.items[idx].computed_box.h,
+                .painter = tree.nodes.items[idx].painter,
+            });
+            var child_id = tree.nodes.items[idx].first_children;
+            while (child_id) |id| {
+                try tree.compute_draw_command(id);
+                child_id = tree.nodes.items[id].next;
+            }
         }
     };
 }
@@ -126,29 +198,29 @@ test "ui end2end test" {
         tree.init(std.testing.allocator);
         defer tree.deinit();
         try tree.nodes.appendSlice(tt.nodes);
-        tree.compute(0);
-        try expectEqual(tree.commands.items.len, tt.expected.len, "painter command len", tt.name);
-        for (tt.expected, tree.commands.items) |exp, got| {
-            try expectEqual(exp.x, got.x, "x", tt.name);
-            try expectEqual(exp.y, got.y, "y", tt.name);
-            try expectEqual(exp.w, got.w, "w", tt.name);
-            try expectEqual(exp.h, got.h, "h", tt.name);
-            try expectEqual(exp.painter.kind, got.painter.kind, "painter.kind", tt.name);
-            try expectEqualStrings(exp.painter.source, got.painter.source, "painter.source", tt.name);
+        try tree.compute(0);
+        try expectEqual(tree.commands.items.len, tt.expected.len, "painter command len", tt.name, 0);
+        for (tt.expected, tree.commands.items, 1..) |exp, got, i| {
+            try expectEqual(exp.x, got.x, "x", tt.name, i);
+            try expectEqual(exp.y, got.y, "y", tt.name, i);
+            try expectEqual(exp.w, got.w, "w", tt.name, i);
+            try expectEqual(exp.h, got.h, "h", tt.name, i);
+            try expectEqual(exp.painter.kind, got.painter.kind, "painter.kind", tt.name, i);
+            try expectEqualStrings(exp.painter.source, got.painter.source, "painter.source", tt.name, i);
         }
     }
 }
 
-pub inline fn expectEqual(expected: anytype, actual: anytype, name: []const u8, case: []const u8) !void {
+pub inline fn expectEqual(expected: anytype, actual: anytype, name: []const u8, case: []const u8, i: usize) !void {
     std.testing.expectEqual(expected, actual) catch |err| {
-        std.debug.print("at {s} on {s}\n", .{ name, case });
+        std.debug.print("at {s} on {s}:{d}\n", .{ name, case, i });
         return err;
     };
 }
 
-pub inline fn expectEqualStrings(expected: []const u8, actual: []const u8, name: []const u8, case: []const u8) !void {
+pub inline fn expectEqualStrings(expected: []const u8, actual: []const u8, name: []const u8, case: []const u8, i: usize) !void {
     std.testing.expectEqual(expected, actual) catch |err| {
-        std.debug.print("at {s} on {s}\n", .{ name, case });
+        std.debug.print("at {s} on {s}:{d}\n", .{ name, case, i });
         return err;
     };
 }
