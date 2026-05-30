@@ -32,7 +32,7 @@ fn Node(comptime T: type, comptime default_painter: T) type {
                 pref_use: SizePrefUseKind = .none,
             } = .{},
         } = .{ .{}, .{} },
-        layout: LayoutKind = .vertical,
+        layout: LayoutKind = .horizontal,
         spacing: i32 = 0,
         margin: i32 = 0,
         @"align": struct {
