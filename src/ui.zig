@@ -147,15 +147,17 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             const el = &tree.nodes.items[idx];
             var child_id = tree.nodes.items[idx].first_children;
             while (child_id) |c_id| {
-                compute_fit_size_width(tree, c_id, idx);
+                tree.compute_fit_size_width(c_id, idx);
                 child_id = tree.nodes.items[c_id].next;
             }
-            const content_width: i32 = 0.0;
+            var content_width: i32 = 0.0;
             switch (el.size[0].kind) {
                 .fixed => el.computed_box.w = el.size[0].size,
                 .fit => el.fit_width_sizing(el.size[0].bound.min, el.size[0].bound.max),
                 .grow => {
-                    //content_width = tree.mesure_content_fn(tree.mesure_content_userdata, el.painter).x;
+                    if (comptime std.meta.hasMethod(T, "mesure_content_fn")) {
+                        content_width = T.mesure_content_fn(&el.painter)[0];
+                    }
                     if (el.size[0].bound.pref_use == .to_max) {
                         el.size[0].bound.max = content_width;
                     }
@@ -202,11 +204,14 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
                 .fixed => el.computed_box.h = el.size[1].size,
                 .fit => el.fit_height_sizing(el.size[1].bound.min, el.size[1].bound.max),
                 .grow => {
+                    var content_height: i32 = 0;
                     el.fit_height_sizing(el.size[1].bound.min, el.size[1].bound.max);
+                    if (comptime std.meta.hasMethod(T, "mesure_content_fn")) {
+                        content_height = el.painter.mesure_content_fn()[1];
+                    }
                     el.computed_box.h = @max(
                         el.computed_box.h,
-                        el.computed_box.h,
-                        //tree.mesure_content_fn(tree.mesure_content_userdata, el.painter)[1],
+                        content_height,
                     );
                 },
             }
@@ -338,12 +343,12 @@ test "ui end2end test" {
     const Painter = struct {
         kind: PainterKind = .none,
         source: []const u8 = "",
-        // pub fn mesure_content_fn() [2]i32 {
-        //     return [2]i32{ 0, 0 };
-        // }
-        // fn wrap_content_fn(w: i32) i32 {
-        //     return w;
-        // }
+        pub fn mesure_content_fn(_: *@This()) [2]i32 {
+            return [2]i32{ 0, 0 };
+        }
+        fn wrap_content_fn(_: *@This(), w: i32) i32 {
+            return w;
+        }
     };
     const UITestCase = struct {
         name: []const u8,
