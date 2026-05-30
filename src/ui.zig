@@ -68,6 +68,18 @@ fn Node(comptime T: type, comptime default_painter: T) type {
                 el.computed_box.w = max;
             }
         }
+        pub fn fit_height_sizing(el: *@This(), min: i32, max: i32) void {
+            el.computed_box.h += el.padding.top + el.padding.bottom;
+            if (el.layout == .vertical) {
+                el.computed_box.h += (el.children_count - 1) * el.margin;
+            }
+            if (el.computed_box.h < min) {
+                el.computed_box.h = min;
+            }
+            if (el.computed_box.h > max and max > 0) {
+                el.computed_box.h = max;
+            }
+        }
     };
 }
 
@@ -156,7 +168,10 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
 
             switch (tree.nodes.items[p_id].layout) {
                 .horizontal => tree.nodes.items[p_id].computed_box.w += el.computed_box.w,
-                .vertical, .stack => tree.nodes.items[p_id].computed_box.w = @max(el.computed_box.w, tree.nodes.items[p_id].computed_box.w),
+                .vertical, .stack => tree.nodes.items[p_id].computed_box.w = @max(
+                    el.computed_box.w,
+                    tree.nodes.items[p_id].computed_box.w,
+                ),
             }
         }
 
@@ -176,9 +191,36 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         }
 
         pub fn compute_fit_size_height(tree: *@This(), idx: NodeIndex, parent_idx: ?NodeIndex) void {
-            _ = tree;
-            _ = idx;
-            _ = parent_idx;
+            const el = &tree.nodes.items[idx];
+            var child_id = tree.nodes.items[idx].first_children;
+            while (child_id) |c_id| {
+                tree.compute_fit_size_height(c_id, idx);
+                child_id = tree.nodes.items[c_id].next;
+            }
+
+            switch (el.size[1].kind) {
+                .fixed => el.computed_box.h = el.size[1].size,
+                .fit => el.fit_height_sizing(el.size[1].bound.min, el.size[1].bound.max),
+                .grow => {
+                    el.fit_height_sizing(el.size[1].bound.min, el.size[1].bound.max);
+                    el.computed_box.h = @max(
+                        el.computed_box.h,
+                        el.computed_box.h,
+                        //tree.mesure_content_fn(tree.mesure_content_userdata, el.painter)[1],
+                    );
+                },
+            }
+
+            const p_id = parent_idx orelse return;
+            switch (tree.nodes.items[p_id].layout) {
+                .vertical => tree.nodes.items[p_id].computed_box.h += el.computed_box.h,
+                .horizontal, .stack => {
+                    tree.nodes.items[p_id].computed_box.h = @max(
+                        el.computed_box.h,
+                        tree.nodes.items[p_id].computed_box.h,
+                    );
+                },
+            }
         }
         pub fn compute_shrink_size_height(tree: *@This(), idx: NodeIndex) void {
             _ = tree;
@@ -333,6 +375,7 @@ test "ui end2end test" {
             try expectEqual(exp.painter.kind, got.painter.kind, "painter.kind", tt.name, i);
             try expectEqualStrings(exp.painter.source, got.painter.source, "painter.source", tt.name, i);
         }
+        std.debug.print("{s} pass\n", .{tt.name});
     }
 }
 
