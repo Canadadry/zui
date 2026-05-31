@@ -569,7 +569,7 @@ pub inline fn expectEqual(expected: anytype, actual: anytype, name: []const u8, 
 }
 
 pub inline fn expectEqualStrings(expected: []const u8, actual: []const u8, name: []const u8, case: []const u8, i: usize) !void {
-    std.testing.expectEqual(expected, actual) catch |err| {
+    std.testing.expectEqualStrings(expected, actual) catch |err| {
         std.debug.print("at {s} on {s}:{d}\n", .{ name, case, i });
         return err;
     };
