@@ -133,7 +133,7 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             tree.compute_wrap(head);
             tree.compute_fit_size_height(head, null);
             tree.compute_shrink_size_height(head);
-            tree.compute_grow_size_height(head);
+            try tree.compute_grow_size_height(head);
             tree.compute_position(head, 0, 0);
             try tree.compute_draw_command(head);
         }
@@ -343,11 +343,10 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         }
 
         pub fn cmp_ptr_growable(_: u8, left: *Growable, right: *Growable) bool {
-            const delta: i32 = left.val - right.val;
-            if (delta == 0) {
-                return left.id - right.id > 0;
+            if (left.val > right.val) {
+                return left.id > right.id;
             }
-            return delta > 0;
+            return left.val > right.val;
         }
 
         pub fn compute_wrap(tree: *@This(), idx: NodeIndex) void {
@@ -390,14 +389,29 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
                 },
             }
         }
+
         pub fn compute_shrink_size_height(tree: *@This(), idx: NodeIndex) void {
             _ = tree;
             _ = idx;
         }
 
-        pub fn compute_grow_size_height(tree: *@This(), idx: NodeIndex) void {
-            _ = tree;
-            _ = idx;
+        pub fn compute_grow_size_height(tree: *@This(), parent_id: NodeIndex) !void {
+            const remaining = tree.get_remaining(parent_id)[1];
+            try tree.set_growable(parent_id, .dir_y);
+
+            switch (tree.nodes.items[parent_id].layout) {
+                .horizontal => grow_across_axis(tree, remaining),
+                .vertical => try grow_along_axis(tree, remaining),
+                .stack => grow_across_axis(tree, remaining),
+            }
+
+            tree.apply_grow_values(.dir_y);
+
+            var child_id = tree.nodes.items[parent_id].first_children;
+            while (child_id) |c_id| {
+                try tree.compute_grow_size_height(c_id);
+                child_id = tree.nodes.items[c_id].next;
+            }
         }
 
         pub fn compute_position(tree: *@This(), idx: NodeIndex, x: i32, y: i32) void {
