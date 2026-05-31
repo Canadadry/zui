@@ -27,11 +27,6 @@ fn Node(comptime T: type, comptime default_painter: T) type {
             min: i32 = 0,
             max: i32 = 0,
             pref_use: SizePrefUseKind = .none,
-            bound: struct {
-                min: i32 = 0,
-                max: i32 = 0,
-                pref_use: SizePrefUseKind = .none,
-            } = .{},
         } = .{ .{}, .{} },
         layout: LayoutKind = .horizontal,
         spacing: i32 = 0,
@@ -154,15 +149,13 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             var content_width: i32 = 0.0;
             switch (el.size[0].kind) {
                 .fixed => el.computed_box.w = el.size[0].size,
-                .fit => el.fit_width_sizing(el.size[0].bound.min, el.size[0].bound.max),
+                .fit => el.fit_width_sizing(el.size[0].min, el.size[0].max),
                 .grow => {
-                    if (comptime std.meta.hasMethod(T, "mesure_content_fn")) {
-                        content_width = T.mesure_content_fn(&el.painter)[0];
+                    content_width = T.mesure_content_fn(&el.painter)[0];
+                    if (el.size[0].pref_use == .to_max) {
+                        el.size[0].max = content_width;
                     }
-                    if (el.size[0].bound.pref_use == .to_max) {
-                        el.size[0].bound.max = content_width;
-                    }
-                    el.fit_width_sizing(el.size[0].bound.min, el.size[0].bound.max);
+                    el.fit_width_sizing(el.size[0].min, el.size[0].max);
                     el.computed_box.w = @max(el.computed_box.w, content_width);
                 },
             }
@@ -234,8 +227,8 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
                             try tree.growables.append(.{
                                 .id = c_id,
                                 .val = child.computed_box.w,
-                                .min = child.size[0].bound.min,
-                                .max = child.size[0].bound.max,
+                                .min = child.size[0].min,
+                                .max = child.size[0].max,
                                 .to_remove = false,
                             });
                         }
@@ -250,8 +243,8 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
                             try tree.growables.append(.{
                                 .id = c_id,
                                 .val = child.computed_box.h,
-                                .min = child.size[1].bound.min,
-                                .max = child.size[1].bound.max,
+                                .min = child.size[1].min,
+                                .max = child.size[1].max,
                                 .to_remove = false,
                             });
                         }
@@ -319,9 +312,9 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         pub fn add(tree: *@This(), delta: i32, count: usize) i32 {
             var added: i32 = 0;
             const end = @min(count, tree.sorted_growables.items.len);
-            var i: usize = 0;
+            var i: i32 = 0;
             while (i < end) : (i += 1) {
-                const g = tree.sorted_growables.items[i];
+                const g = tree.sorted_growables.items[@intCast(i)];
                 g.val += delta;
                 added += delta;
                 if (g.val >= g.max and g.max != 0) {
@@ -333,8 +326,8 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             i = 0;
 
             while (i < tree.sorted_growables.items.len) : (i += 1) {
-                if (tree.sorted_growables.items[i].to_remove) {
-                    tree.sorted_growables.items[i] = tree.sorted_growables.items[tree.sorted_growables.items.len - 1];
+                if (tree.sorted_growables.items[@intCast(i)].to_remove) {
+                    tree.sorted_growables.items[@intCast(i)] = tree.sorted_growables.items[tree.sorted_growables.items.len - 1];
                     tree.sorted_growables.items.len -= 1;
                     i -= 1;
                 }
@@ -364,10 +357,10 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         }
 
         pub fn cmp_ptr_growable(_: u8, left: *Growable, right: *Growable) bool {
-            if (left.val > right.val) {
-                return left.id > right.id;
+            if (left.val == right.val) {
+                return left.id < right.id;
             }
-            return left.val > right.val;
+            return left.val < right.val;
         }
 
         pub fn compute_wrap(tree: *@This(), idx: NodeIndex) void {
@@ -390,13 +383,11 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
 
             switch (el.size[1].kind) {
                 .fixed => el.computed_box.h = el.size[1].size,
-                .fit => el.fit_height_sizing(el.size[1].bound.min, el.size[1].bound.max),
+                .fit => el.fit_height_sizing(el.size[1].min, el.size[1].max),
                 .grow => {
                     var content_height: i32 = 0;
-                    el.fit_height_sizing(el.size[1].bound.min, el.size[1].bound.max);
-                    if (comptime std.meta.hasMethod(T, "mesure_content_fn")) {
-                        content_height = el.painter.mesure_content_fn()[1];
-                    }
+                    el.fit_height_sizing(el.size[1].min, el.size[1].max);
+                    content_height = el.painter.mesure_content_fn()[1];
                     el.computed_box.h = @max(
                         el.computed_box.h,
                         content_height,
