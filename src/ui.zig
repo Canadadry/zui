@@ -151,7 +151,7 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
                 .fixed => el.computed_box.w = el.size[0].size,
                 .fit => el.fit_width_sizing(el.size[0].min, el.size[0].max),
                 .grow => {
-                    content_width = T.mesure_content_fn(&el.painter)[0];
+                    content_width = T.measure_content_fn(&el.painter)[0];
                     if (el.size[0].pref_use == .to_max) {
                         el.size[0].max = content_width;
                     }
@@ -385,7 +385,7 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
                 .grow => {
                     var content_height: i32 = 0;
                     el.fit_height_sizing(el.size[1].min, el.size[1].max);
-                    content_height = el.painter.mesure_content_fn()[1];
+                    content_height = el.painter.measure_content_fn()[1];
                     el.computed_box.h = @max(
                         el.computed_box.h,
                         content_height,
@@ -562,14 +562,14 @@ test "ui end2end test" {
     const Painter = struct {
         kind: PainterKind = .none,
         source: []const u8 = "",
-        pub fn mesure_content_fn(p: *@This()) [2]i32 {
+        pub fn measure_content_fn(p: *@This()) [2]i32 {
             if (p.kind == .img) {
                 return Vec2.parseSize(p.source) catch [2]i32{ 0, 0 };
             }
             return [2]i32{ 0, 0 };
         }
         fn wrap_content_fn(p: *@This(), width: i32) i32 {
-            const content = p.mesure_content_fn();
+            const content = p.measure_content_fn();
             const height = content[0] + content[1] - width;
             if (height < 0) {
                 return 0;
