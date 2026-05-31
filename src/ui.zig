@@ -587,6 +587,7 @@ test "ui end2end test" {
     var diagnostics = std.json.Diagnostics{};
     var reader: std.Io.Reader = .fixed(@embedFile("testcase.json"));
     var json_reader = std.json.Reader.init(std.testing.allocator, &reader);
+    defer json_reader.deinit();
     json_reader.enableDiagnostics(&diagnostics);
     const tests = std.json.parseFromTokenSource([]UITestCase, std.testing.allocator, &json_reader, .{}) catch |err| {
         std.debug.print("{d}:{d} : {}\n", .{ diagnostics.getLine(), diagnostics.getColumn(), err });
@@ -609,7 +610,7 @@ test "ui end2end test" {
             try expectEqual(exp.painter.kind, got.painter.kind, "painter.kind", tt.name, i);
             try expectEqualStrings(exp.painter.source, got.painter.source, "painter.source", tt.name, i);
         }
-        std.debug.print("{s} pass\n", .{tt.name});
+        // std.debug.print("{s} pass\n", .{tt.name});
     }
 }
 
