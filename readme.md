@@ -38,7 +38,8 @@ A node is one box in the tree. The fields that drive layout:
 Children are stored as an **intrusive linked list of indices** into the tree's
 `nodes` array: each node points to `first_children` / `last_children`, and
 siblings are chained through `next`. (`link_child` is currently a placeholder, so
-these links are populated directly — see *Usage*.)
+when you build nodes by hand these links must be populated directly — see
+*Building nodes manually*. The `Builder` does this for you.)
 
 ### Sizing kinds
 
@@ -95,54 +96,143 @@ pub fn wrap_content_fn(self: *@This(), width: i32) i32 { ... }
 `zui` never inspects the painter beyond these calls — it copies the painter value
 into each draw command and hands control back to you.
 
-
 ## Usage
 
+### With the `Builder` (recommended)
+
+The `Builder` lets you describe the tree declaratively with Tailwind-inspired
+class strings, instead of allocating node indices and wiring
+`first_children` / `next` by hand. `ui.build(root)` flattens the declared tree
+into the flat node array that `Tree` expects.
+
+The example below builds a tiny UI — a column holding a row of two buttons and a
+row with a growing canvas next to a fixed sidebar — and renders it to the
+terminal as ASCII boxes. Run it with `zig build example`.
+
 ```zig
-const std = @import("std");
+pub fn main() !void {
+    const alloc = std.heap.page_allocator;
 
-const Painter = struct {
-    color: u32 = 0,
-    pub fn measure_content_fn(_: *@This()) [2]i32 {
-        return .{ 0, 0 };
+    // Declare the tree with class strings.
+    const ui = zui.Builder.Builder(Painter, .{});
+    const root = comptime ui.node("col gap-1 p-1 w-52 h-32", .{ .box = true }, &.{
+        ui.node("row gap-1 grow-x", .{}, &.{
+            ui.leaf("w-12 h-5", .{ .box = true, .label = "btn-a" }),
+            ui.leaf("w-12 h-5", .{ .box = true, .label = "btn-b" }),
+        }),
+        ui.node("row gap-1 grow-x", .{}, &.{
+            ui.leaf("grow h-20", .{ .box = true, .label = "canvas" }),
+            ui.leaf("w-15 h-20", .{ .box = true, .label = "sidebar" }),
+        }),
+    });
+    const nodes = ui.build(root);
+
+    // Feed the flat node array to the layout engine.
+    var tree: zui.Ui.Tree(Painter, .{}) = .{};
+    tree.init(alloc);
+    defer tree.deinit();
+    try tree.nodes.appendSlice(&nodes);
+    try tree.compute(0);
+
+    // Render the resolved boxes to an ASCII buffer.
+    const COLS = 52;
+    const ROWS = 32;
+    var raw: [ROWS][COLS]u8 = undefined;
+    for (&raw) |*row| @memset(row, ' ');
+    var rows: [ROWS][]u8 = undefined;
+    for (0..ROWS) |i| rows[i] = &raw[i];
+
+    for (tree.commands.items) |cmd| {
+        const x: usize = @intCast(cmd.x);
+        const y: usize = @intCast(cmd.y);
+        const w: usize = @intCast(cmd.w);
+        const h: usize = @intCast(cmd.h);
+        if (cmd.painter.box) {
+            rectangle(&rows, x, y, w, h);
+        }
+        text(&rows, cmd.painter.label, x, y, w, h);
     }
-    fn wrap_content_fn(_: *@This(), _: i32) i32 {
-        return 0;
-    }
-};
 
-var tree: Tree(Painter, .{}) = .{};
-tree.init(allocator);
-defer tree.deinit();
-
-// Build the node list. Children are linked by index:
-// node 0 is a 200x200 row containing two growing children (1 and 2).
-try tree.nodes.appendSlice(&.{
-    .{
-        .size = .{ .{ .kind = .fixed, .size = 200 }, .{ .kind = .fixed, .size = 200 } },
-        .layout = .horizontal,
-        .margin = 10,
-        .padding = .{ .left = 10, .right = 10, .top = 10, .bottom = 10 },
-        .children_count = 2,
-        .first_children = 1,
-        .last_children = 2,
-    },
-    .{ .size = .{ .{ .kind = .grow, .min = 100 }, .{ .kind = .grow } }, .next = 2 },
-    .{ .size = .{ .{ .kind = .grow }, .{ .kind = .grow } } },
-});
-
-try tree.compute(0);
-
-for (tree.commands.items) |cmd| {
-    // hand cmd.x / cmd.y / cmd.w / cmd.h / cmd.painter to your renderer
-    std.debug.print("{d},{d} {d}x{d}\n", .{ cmd.x, cmd.y, cmd.w, cmd.h });
+    for (&rows) |row| std.debug.print("{s}\n", .{row});
 }
 ```
+
+which render
+
+```bash
+> zig build example
++--------------------------------------------------+
+|+----------+ +----------+                         |
+||          | |          |                         |
+||  btn-a   | |  btn-b   |                         |
+||          | |          |                         |
+|+----------+ +----------+                         |
+|                                                  |
+|+--------------------------------+ +-------------+|
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||             canvas             | |   sidebar   ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+||                                | |             ||
+|+--------------------------------+ +-------------+|
+|                                                  |
+|                                                  |
+|                                                  |
+|                                                  |
++--------------------------------------------------+
+```
+
+#### Builder API
+
+- `zui.Builder.Builder(T, default_painter)` — returns a builder bound to your
+  painter type `T` and a default painter value.
+- `ui.node(classes, painter, children)` — a node with children (a slice of nodes
+  produced by other `node` / `leaf` calls).
+- `ui.leaf(classes, painter)` — a node with no children.
+- `ui.build(root)` — flattens the declared tree into the flat node array,
+  populating the `first_children` / `last_children` / `next` indices for you.
+
+Declarations are done at `comptime`, so the whole tree shape is resolved at
+compile time before being appended to `tree.nodes`.
+
+#### Class reference
+
+These are the classes used in the example above. The `Builder` is
+Tailwind-inspired; this table reflects what the example exercises rather than the
+full vocabulary — adjust it to match the `Builder` source.
+
+| Class | Effect |
+|-------|--------|
+| `row` | `layout = .horizontal` |
+| `col` | `layout = .vertical` |
+| `w-N` | fixed width of `N` |
+| `h-N` | fixed height of `N` |
+| `grow` | grow on both axes |
+| `grow-x` | grow on the X axis only |
+| `p-N` | padding of `N` on all sides |
+| `gap-N` | margin (gap between children) of `N` |
+
+When several classes touch the same axis, the later one wins — e.g. `grow h-20`
+grows both axes, then pins the height to `20`.
 
 ## Building and testing
 
 ```sh
 zig build          # builds the `zui` executable
+zig build example  # builds and runs the ASCII Builder example above
 zig build test     # runs the test suite
 ```
 
