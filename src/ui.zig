@@ -128,11 +128,11 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
 
         pub fn compute(tree: *@This(), head: NodeIndex) !void {
             tree.compute_fit_size_width(head, null);
-            tree.compute_shrink_size_width(head);
+            try tree.compute_shrink_size_width(head);
             try tree.compute_grow_size_width(head);
             tree.compute_wrap(head);
             tree.compute_fit_size_height(head, null);
-            tree.compute_shrink_size_height(head);
+            try tree.compute_shrink_size_height(head);
             try tree.compute_grow_size_height(head);
             tree.compute_position(head, 0, 0);
             try tree.compute_draw_command(head);
@@ -178,9 +178,30 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             }
         }
 
-        pub fn compute_shrink_size_width(tree: *@This(), idx: NodeIndex) void {
-            _ = tree;
-            _ = idx;
+        pub fn compute_shrink_size_width(tree: *@This(), parent_id: NodeIndex) !void {
+            const parent = &tree.nodes.items[parent_id];
+            const remaining = tree.get_remaining(parent_id)[0];
+            try tree.set_growable(parent_id, .dir_x);
+
+            switch (parent.layout) {
+                .horizontal => try shrink_along_axis_to_min(tree),
+                .vertical => grow_across_axis(tree, remaining),
+                .stack => grow_across_axis(tree, remaining),
+            }
+
+            tree.apply_grow_values(.dir_x);
+
+            var child_id = parent.first_children;
+            while (child_id) |c_id| {
+                try tree.compute_shrink_size_width(c_id);
+                child_id = tree.nodes.items[c_id].next;
+            }
+        }
+
+        pub fn shrink_along_axis_to_min(tree: *@This()) !void {
+            for (tree.growables.items) |*g| {
+                g.val = g.min;
+            }
         }
 
         pub fn compute_grow_size_width(tree: *@This(), parent_id: NodeIndex) !void {
@@ -390,9 +411,24 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             }
         }
 
-        pub fn compute_shrink_size_height(tree: *@This(), idx: NodeIndex) void {
-            _ = tree;
-            _ = idx;
+        pub fn compute_shrink_size_height(tree: *@This(), parent_id: NodeIndex) !void {
+            const parent = &tree.nodes.items[parent_id];
+            const remaining = get_remaining(tree, parent_id)[1];
+            try tree.set_growable(parent_id, .dir_y);
+
+            switch (parent.layout) {
+                .horizontal => grow_across_axis(tree, remaining),
+                .vertical => try shrink_along_axis_to_min(tree),
+                .stack => grow_across_axis(tree, remaining),
+            }
+
+            tree.apply_grow_values(.dir_y);
+
+            var child_id = tree.nodes.items[parent_id].first_children;
+            while (child_id) |c_id| {
+                try compute_shrink_size_height(tree, c_id);
+                child_id = tree.nodes.items[c_id].next;
+            }
         }
 
         pub fn compute_grow_size_height(tree: *@This(), parent_id: NodeIndex) !void {
