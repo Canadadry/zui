@@ -371,8 +371,13 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         }
 
         pub fn compute_wrap(tree: *@This(), idx: NodeIndex) void {
-            _ = tree;
-            _ = idx;
+            const el = &tree.nodes.items[idx];
+            el.computed_box.h = el.painter.wrap_content_fn(el.computed_box.w);
+            var child_id = el.first_children;
+            while (child_id) |c_id| {
+                compute_wrap(tree, c_id);
+                child_id = tree.nodes.items[c_id].next;
+            }
         }
 
         pub fn compute_fit_size_height(tree: *@This(), idx: NodeIndex, parent_idx: ?NodeIndex) void {
@@ -552,15 +557,35 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
 }
 
 test "ui end2end test" {
+    const Vec2 = struct {
+        fn parseSize(s: []const u8) ![2]i32 {
+            var it = std.mem.splitScalar(u8, s, 'x');
+            const x_str = it.next() orelse return error.InvalidFormat;
+            const y_str = it.next() orelse return error.InvalidFormat;
+            return .{
+                try std.fmt.parseInt(i32, x_str, 10),
+                try std.fmt.parseInt(i32, y_str, 10),
+            };
+        }
+    };
+
     const PainterKind = enum { none, img };
     const Painter = struct {
         kind: PainterKind = .none,
         source: []const u8 = "",
-        pub fn mesure_content_fn(_: *@This()) [2]i32 {
+        pub fn mesure_content_fn(p: *@This()) [2]i32 {
+            if (p.kind == .img) {
+                return Vec2.parseSize(p.source) catch [2]i32{ 0, 0 };
+            }
             return [2]i32{ 0, 0 };
         }
-        fn wrap_content_fn(_: *@This(), w: i32) i32 {
-            return w;
+        fn wrap_content_fn(p: *@This(), width: i32) i32 {
+            const content = p.mesure_content_fn();
+            const height = content[0] + content[1] - width;
+            if (height < 0) {
+                return 0;
+            }
+            return height;
         }
     };
     const UITestCase = struct {
