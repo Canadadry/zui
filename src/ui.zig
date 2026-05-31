@@ -312,9 +312,9 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         pub fn add(tree: *@This(), delta: i32, count: usize) i32 {
             var added: i32 = 0;
             const end = @min(count, tree.sorted_growables.items.len);
-            var i: i32 = 0;
+            var i: usize = 0;
             while (i < end) : (i += 1) {
-                const g = tree.sorted_growables.items[@intCast(i)];
+                const g = tree.sorted_growables.items[i];
                 g.val += delta;
                 added += delta;
                 if (g.val >= g.max and g.max != 0) {
@@ -326,10 +326,8 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             i = 0;
 
             while (i < tree.sorted_growables.items.len) : (i += 1) {
-                if (tree.sorted_growables.items[@intCast(i)].to_remove) {
-                    tree.sorted_growables.items[@intCast(i)] = tree.sorted_growables.items[tree.sorted_growables.items.len - 1];
-                    tree.sorted_growables.items.len -= 1;
-                    i -= 1;
+                if (tree.sorted_growables.items[i].to_remove) {
+                    _ = tree.sorted_growables.swapRemove(i);
                 }
             }
             const unused: u8 = 0;
