@@ -4,6 +4,7 @@ const SizeKind = enum { fixed, fit, grow };
 const SizePrefUseKind = enum { none, to_max };
 const LayoutKind = enum { vertical, horizontal, stack };
 const AlignKind = enum { begin, middle, end };
+const Direction = enum { dir_x, dir_y };
 
 pub fn compute_align(a: AlignKind, remaining: i32) i32 {
     return switch (a) {
@@ -128,7 +129,7 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
         pub fn compute(tree: *@This(), head: NodeIndex) !void {
             tree.compute_fit_size_width(head, null);
             tree.compute_shrink_size_width(head);
-            tree.compute_grow_size_width(head);
+            try tree.compute_grow_size_width(head);
             tree.compute_wrap(head);
             tree.compute_fit_size_height(head, null);
             tree.compute_shrink_size_height(head);
@@ -182,9 +183,171 @@ fn Tree(comptime T: type, comptime default_painter: T) type {
             _ = idx;
         }
 
-        pub fn compute_grow_size_width(tree: *@This(), idx: NodeIndex) void {
-            _ = tree;
-            _ = idx;
+        pub fn compute_grow_size_width(tree: *@This(), parent_id: NodeIndex) !void {
+            const remaining = tree.get_remaining(parent_id);
+            try tree.set_growable(parent_id, .dir_x);
+
+            switch (tree.nodes.items[parent_id].layout) {
+                .horizontal => try tree.grow_along_axis(remaining[0]),
+                .vertical => tree.grow_across_axis(remaining[0]),
+                .stack => tree.grow_across_axis(remaining[0]),
+            }
+
+            tree.apply_grow_values(.dir_x);
+
+            var child_id = tree.nodes.items[parent_id].first_children;
+            while (child_id) |c_id| {
+                try compute_grow_size_width(tree, c_id);
+                child_id = tree.nodes.items[c_id].next;
+            }
+        }
+
+        pub fn set_growable(tree: *@This(), parent_id: NodeIndex, dir: Direction) !void {
+            tree.growables.clearRetainingCapacity();
+            switch (dir) {
+                .dir_x => {
+                    var child_id = tree.nodes.items[parent_id].first_children;
+                    while (child_id) |c_id| {
+                        const child = &tree.nodes.items[c_id];
+                        if (child.size[0].kind == .grow) {
+                            try tree.growables.append(.{
+                                .id = c_id,
+                                .val = child.computed_box.w,
+                                .min = child.size[0].bound.min,
+                                .max = child.size[0].bound.max,
+                                .to_remove = false,
+                            });
+                        }
+                        child_id = tree.nodes.items[c_id].next;
+                    }
+                },
+                .dir_y => {
+                    var child_id = tree.nodes.items[parent_id].first_children;
+                    while (child_id) |c_id| {
+                        const child = &tree.nodes.items[c_id];
+                        if (child.size[1].kind == .grow) {
+                            try tree.growables.append(.{
+                                .id = c_id,
+                                .val = child.computed_box.h,
+                                .min = child.size[1].bound.min,
+                                .max = child.size[1].bound.max,
+                                .to_remove = false,
+                            });
+                        }
+                        child_id = tree.nodes.items[c_id].next;
+                    }
+                },
+            }
+        }
+
+        pub fn grow_along_axis(tree: *@This(), remaining: i32) !void {
+            var loc_remaining = remaining;
+            if (tree.growables.items.len == 0 or loc_remaining <= 0) {
+                return;
+            }
+            if (tree.growables.items.len == 1) {
+                tree.growables.items[0].val += loc_remaining;
+                return;
+            }
+            if (tree.growables.items.len > std.math.maxInt(i32)) {
+                return error.Overflow;
+            }
+            try tree.build_sorted_growable();
+            while (tree.sorted_growables.items.len > 0 and @divExact(loc_remaining, @as(i32, @intCast(tree.sorted_growables.items.len))) > 0) {
+                var count: usize = 1;
+                while (count < tree.sorted_growables.items.len) : (count += 1) {
+                    if (tree.sorted_growables.items[count].val > tree.sorted_growables.items[0].val) {
+                        break;
+                    }
+                }
+                var delta: i32 = 0;
+                if (count < tree.sorted_growables.items.len) {
+                    delta = tree.sorted_growables.items[count].val - tree.sorted_growables.items[0].val;
+                } else {
+                    delta = @divExact(loc_remaining, @as(i32, @intCast(count)));
+                }
+                delta = @min(delta, @divExact(loc_remaining, @as(i32, @intCast(count))));
+                if (delta == 0) {
+                    break;
+                }
+                loc_remaining -= tree.add(delta, count);
+            }
+        }
+
+        pub fn grow_across_axis(tree: *@This(), remaining: i32) void {
+            for (tree.growables.items) |*g| {
+                g.val = remaining;
+            }
+        }
+
+        pub fn apply_grow_values(tree: *@This(), dir: Direction) void {
+            switch (dir) {
+                .dir_x => {
+                    for (tree.growables.items) |g| {
+                        tree.nodes.items[g.id].computed_box.w = g.val;
+                    }
+                },
+                .dir_y => {
+                    for (tree.growables.items) |g| {
+                        tree.nodes.items[g.id].computed_box.h = g.val;
+                    }
+                },
+            }
+        }
+
+        pub fn add(tree: *@This(), delta: i32, count: usize) i32 {
+            var added: i32 = 0;
+            const end = @min(count, tree.sorted_growables.items.len);
+            var i: usize = 0;
+            while (i < end) : (i += 1) {
+                const g = tree.sorted_growables.items[i];
+                g.val += delta;
+                added += delta;
+                if (g.val >= g.max and g.max != 0) {
+                    added += g.max - g.val;
+                    g.val = g.max;
+                    g.to_remove = true;
+                }
+            }
+            i = 0;
+
+            while (i < tree.sorted_growables.items.len) : (i += 1) {
+                if (tree.sorted_growables.items[i].to_remove) {
+                    tree.sorted_growables.items[i] = tree.sorted_growables.items[tree.sorted_growables.items.len - 1];
+                    tree.sorted_growables.items.len -= 1;
+                    i -= 1;
+                }
+            }
+            const unused: u8 = 0;
+            std.sort.block(
+                *Growable,
+                tree.sorted_growables.items,
+                unused,
+                cmp_ptr_growable,
+            );
+            return added;
+        }
+
+        pub fn build_sorted_growable(tree: *@This()) !void {
+            tree.sorted_growables.clearRetainingCapacity();
+            for (tree.growables.items) |*g| {
+                try tree.sorted_growables.append(g);
+            }
+            const unused: u8 = 0;
+            std.sort.block(
+                *Growable,
+                tree.sorted_growables.items,
+                unused,
+                cmp_ptr_growable,
+            );
+        }
+
+        pub fn cmp_ptr_growable(_: u8, left: *Growable, right: *Growable) bool {
+            const delta: i32 = left.val - right.val;
+            if (delta == 0) {
+                return left.id - right.id > 0;
+            }
+            return delta > 0;
         }
 
         pub fn compute_wrap(tree: *@This(), idx: NodeIndex) void {
