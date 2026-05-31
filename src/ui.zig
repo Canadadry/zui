@@ -1,12 +1,12 @@
 const std = @import("std");
 
-const SizeKind = enum { fixed, fit, grow };
-const SizePrefUseKind = enum { none, to_max };
-const LayoutKind = enum { vertical, horizontal, stack };
-const AlignKind = enum { begin, middle, end };
+pub const SizeKind = enum { fixed, fit, grow };
+pub const SizePrefUseKind = enum { none, to_max };
+pub const LayoutKind = enum { vertical, horizontal, stack };
+pub const AlignKind = enum { begin, middle, end };
 const Direction = enum { dir_x, dir_y };
 
-pub fn compute_align(a: AlignKind, remaining: i32) i32 {
+fn compute_align(a: AlignKind, remaining: i32) i32 {
     return switch (a) {
         .begin => 0,
         .middle => remaining >> 1,
@@ -14,7 +14,7 @@ pub fn compute_align(a: AlignKind, remaining: i32) i32 {
     };
 }
 
-fn Node(comptime T: type, comptime default_painter: T) type {
+pub fn Node(comptime T: type, comptime default_painter: T) type {
     return struct {
         painter: T = default_painter,
         pos: struct {
@@ -79,7 +79,7 @@ fn Node(comptime T: type, comptime default_painter: T) type {
     };
 }
 
-const NodeIndex = usize;
+pub const NodeIndex = usize;
 const Growable = struct {
     id: NodeIndex,
     val: i32,
@@ -88,7 +88,7 @@ const Growable = struct {
     to_remove: bool,
 };
 
-fn PainterCommand(comptime T: type, comptime default_painter: T) type {
+pub fn PainterCommand(comptime T: type, comptime default_painter: T) type {
     return struct {
         x: i32 = 0,
         y: i32 = 0,
@@ -100,7 +100,7 @@ fn PainterCommand(comptime T: type, comptime default_painter: T) type {
     };
 }
 
-fn Tree(comptime T: type, comptime default_painter: T) type {
+pub fn Tree(comptime T: type, comptime default_painter: T) type {
     return struct {
         nodes: std.array_list.Managed(Node(T, default_painter)) = undefined,
         commands: std.array_list.Managed(PainterCommand(T, default_painter)) = undefined,
@@ -568,7 +568,7 @@ test "ui end2end test" {
             }
             return [2]i32{ 0, 0 };
         }
-        fn wrap_content_fn(p: *@This(), width: i32) i32 {
+        pub fn wrap_content_fn(p: *@This(), width: i32) i32 {
             const content = p.measure_content_fn();
             const height = content[0] + content[1] - width;
             if (height < 0) {

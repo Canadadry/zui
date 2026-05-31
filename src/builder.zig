@@ -1,5 +1,5 @@
 const std = @import("std");
-const ui = @import("ui");
+const ui = @import("ui.zig");
 
 fn argOf(comptime tok: []const u8, comptime prefix: []const u8) ?[]const u8 {
     if (std.mem.startsWith(u8, tok, prefix)) return tok[prefix.len..];
@@ -159,6 +159,7 @@ fn applyToken(comptime tok: []const u8, n: anytype) void {
 
 fn parseClasses(comptime s: []const u8, n: anytype) void {
     comptime {
+        @setEvalBranchQuota(10_000);
         var it = std.mem.tokenizeScalar(u8, s, ' ');
         while (it.next()) |tok| applyToken(tok, n);
     }
@@ -173,16 +174,14 @@ pub fn Builder(comptime T: type, comptime default_painter: T) type {
             children: []const @This() = &.{},
         };
 
-        /// conteneur (painter par défaut)
         pub fn node(comptime classes: []const u8, comptime children: []const Spec) Spec {
             comptime {
                 var tmp = N{};
                 parseClasses(classes, &tmp);
-            } // valide les classes ici
+            }
             return .{ .classes = classes, .children = children };
         }
 
-        /// feuille avec painter, sans enfants
         pub fn leaf(comptime classes: []const u8, comptime painter: T) Spec {
             comptime {
                 var tmp = N{};
@@ -191,7 +190,6 @@ pub fn Builder(comptime T: type, comptime default_painter: T) type {
             return .{ .classes = classes, .painter = painter };
         }
 
-        /// aplatit l'arbre de Spec en tableau de Node avec les index câblés
         pub fn build(comptime root: Spec) [count(root)]N {
             return comptime blk: {
                 var nodes: [count(root)]N = undefined;
@@ -245,7 +243,7 @@ const DslPainter = struct {
         if (p.kind == .img) return parseSize(p.source);
         return .{ 0, 0 };
     }
-    fn wrap_content_fn(p: *@This(), width: i32) i32 {
+    pub fn wrap_content_fn(p: *@This(), width: i32) i32 {
         const c = p.measure_content_fn();
         const h = c[0] + c[1] - width;
         return if (h < 0) 0 else h;
