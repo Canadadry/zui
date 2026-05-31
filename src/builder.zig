@@ -174,12 +174,12 @@ pub fn Builder(comptime T: type, comptime default_painter: T) type {
             children: []const @This() = &.{},
         };
 
-        pub fn node(comptime classes: []const u8, comptime children: []const Spec) Spec {
+        pub fn node(comptime classes: []const u8, comptime painter: T, comptime children: []const Spec) Spec {
             comptime {
                 var tmp = N{};
                 parseClasses(classes, &tmp);
             }
-            return .{ .classes = classes, .children = children };
+            return .{ .classes = classes, .painter = painter, .children = children };
         }
 
         pub fn leaf(comptime classes: []const u8, comptime painter: T) Spec {
@@ -257,12 +257,12 @@ test "ui dsl: structure et parsing des classes" {
     //  0 root ─┬─ 1 A ─┬─ 2 A1
     //          │       └─ 3 A2
     //          └─ 4 B ──── 5 B1
-    const root = comptime b.node("row gap-8 p-16 grow", &.{
-        b.node("col gap-4 w-200", &.{
+    const root = comptime b.node("row gap-8 p-16 grow", .{}, &.{
+        b.node("col gap-4 w-200", .{}, &.{
             b.leaf("w-100 h-50", .{ .kind = .img, .source = "100x50" }),
             b.node("grow h-fit", &.{}),
         }),
-        b.node("ax-center ay-center grow", &.{
+        b.node("ax-center ay-center grow", .{}, &.{
             b.leaf("w-64 h-64", .{ .kind = .img, .source = "64x64" }),
         }),
     });
