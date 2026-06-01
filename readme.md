@@ -10,6 +10,26 @@ The sizing model and the grow distribution algorithm are inspired by
 
 > Tested against Zig **0.16.0**.
 
+## Install
+
+just run
+
+```bash
+zig fetch --save https://github.com/Canadadry/zui/archive/refs/heads/master.tar.gz
+```
+
+and add this to your `build.zig`
+
+```zig
+const zui_dep = b.dependency("zui", .{
+    .target = target,
+    .optimize = optimize,
+});
+
+exe.root_module.addImport("zui", zui_dep.module("zui"));
+```
+
+
 ## What it does
 
 `zui` separates *layout* from *rendering*. You describe a hierarchy of nodes;
