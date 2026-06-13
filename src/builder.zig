@@ -184,12 +184,12 @@ pub fn Builder(comptime T: type, comptime default_painter: T) type {
         };
 
         pub fn node(comptime classes: []const u8, painter: T, children: []const Spec) Spec {
-            validateClass(classes);
+            comptime validateClass(classes);
             return .{ .classes = classes, .painter = painter, .children = children };
         }
 
         pub fn leaf(comptime classes: []const u8, painter: T) Spec {
-            validateClass(classes);
+            comptime validateClass(classes);
             return .{ .classes = classes, .painter = painter };
         }
 
