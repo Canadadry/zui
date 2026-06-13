@@ -1,224 +1,215 @@
 const std = @import("std");
 const ui = @import("ui.zig");
 
-fn argOf(comptime tok: []const u8, comptime prefix: []const u8) ?[]const u8 {
-    if (std.mem.startsWith(u8, tok, prefix)) return tok[prefix.len..];
-    return null;
-}
-fn numOf(comptime tok: []const u8, comptime prefix: []const u8) ?i32 {
-    if (argOf(tok, prefix)) |rest|
-        return std.fmt.parseInt(i32, rest, 10) catch
-            @compileError("nombre invalide dans la classe '" ++ tok ++ "'");
-    return null;
-}
-
-fn applyToken(comptime tok: []const u8, n: anytype) void {
-    if (std.mem.eql(u8, tok, "row")) {
-        n.layout = .horizontal;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "col")) {
-        n.layout = .vertical;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "stack")) {
-        n.layout = .stack;
-        return;
-    }
-
-    if (std.mem.eql(u8, tok, "grow")) {
-        n.size[0].kind = .grow;
-        n.size[1].kind = .grow;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "grow-x")) {
-        n.size[0].kind = .grow;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "grow-y")) {
-        n.size[1].kind = .grow;
-        return;
-    }
-
-    if (std.mem.eql(u8, tok, "center")) {
-        n.@"align".x = .middle;
-        n.@"align".y = .middle;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "ax-start")) {
-        n.@"align".x = .begin;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "ax-center")) {
-        n.@"align".x = .middle;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "ax-end")) {
-        n.@"align".x = .end;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "ay-start")) {
-        n.@"align".y = .begin;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "ay-center")) {
-        n.@"align".y = .middle;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "ay-end")) {
-        n.@"align".y = .end;
-        return;
-    }
-
-    // width — l'ordre compte : fit/grow puis min/max puis fixed
-    if (std.mem.eql(u8, tok, "w-fit")) {
-        n.size[0].kind = .fit;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "w-grow")) {
-        n.size[0].kind = .grow;
-        return;
-    }
-    if (numOf(tok, "min-w-")) |v| {
-        n.size[0].min = v;
-        return;
-    }
-    if (numOf(tok, "max-w-")) |v| {
-        n.size[0].max = v;
-        return;
-    }
-    if (numOf(tok, "w-")) |v| {
-        n.size[0].kind = .fixed;
-        n.size[0].size = v;
-        return;
-    }
-
-    // height
-    if (std.mem.eql(u8, tok, "h-fit")) {
-        n.size[1].kind = .fit;
-        return;
-    }
-    if (std.mem.eql(u8, tok, "h-grow")) {
-        n.size[1].kind = .grow;
-        return;
-    }
-    if (numOf(tok, "min-h-")) |v| {
-        n.size[1].min = v;
-        return;
-    }
-    if (numOf(tok, "max-h-")) |v| {
-        n.size[1].max = v;
-        return;
-    }
-    if (numOf(tok, "h-")) |v| {
-        n.size[1].kind = .fixed;
-        n.size[1].size = v;
-        return;
-    }
-
-    // padding
-    if (numOf(tok, "px-")) |v| {
-        n.padding.left = v;
-        n.padding.right = v;
-        return;
-    }
-    if (numOf(tok, "py-")) |v| {
-        n.padding.top = v;
-        n.padding.bottom = v;
-        return;
-    }
-    if (numOf(tok, "pl-")) |v| {
-        n.padding.left = v;
-        return;
-    }
-    if (numOf(tok, "pr-")) |v| {
-        n.padding.right = v;
-        return;
-    }
-    if (numOf(tok, "pt-")) |v| {
-        n.padding.top = v;
-        return;
-    }
-    if (numOf(tok, "pb-")) |v| {
-        n.padding.bottom = v;
-        return;
-    }
-    if (numOf(tok, "p-")) |v| {
-        n.padding = .{ .left = v, .right = v, .top = v, .bottom = v };
-        return;
-    }
-
-    // gap inter-enfants → ton champ `margin` (au passage : `spacing` n'est jamais lu dans compute)
-    if (numOf(tok, "gap-")) |v| {
-        n.margin = v;
-        return;
-    }
-
-    @compileError("classe ui inconnue : '" ++ tok ++ "'");
-}
-
-fn parseClasses(comptime s: []const u8, n: anytype) void {
-    comptime {
-        @setEvalBranchQuota(10_000);
-        var it = std.mem.tokenizeScalar(u8, s, ' ');
-        while (it.next()) |tok| applyToken(tok, n);
-    }
-}
-
 pub fn Builder(comptime T: type, comptime default_painter: T) type {
     const N = ui.Node(T, default_painter);
     return struct {
+        fn argOf(tok: []const u8, prefix: []const u8) ?[]const u8 {
+            if (std.mem.startsWith(u8, tok, prefix)) return tok[prefix.len..];
+            return null;
+        }
+        fn numOf(tok: []const u8, prefix: []const u8) ?i32 {
+            if (argOf(tok, prefix)) |rest|
+                return std.fmt.parseInt(i32, rest, 10) catch {
+                    if (@inComptime()) {
+                        @compileError("expected a valid number in '" ++ tok ++ "'");
+                    }
+                    return null;
+                };
+            return null;
+        }
+        fn applyToken(tok: []const u8, n: *N) bool {
+            if (std.mem.eql(u8, tok, "row")) {
+                n.layout = .horizontal;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "col")) {
+                n.layout = .vertical;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "stack")) {
+                n.layout = .stack;
+                return true;
+            }
+
+            if (std.mem.eql(u8, tok, "grow")) {
+                n.size[0].kind = .grow;
+                n.size[1].kind = .grow;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "grow-x")) {
+                n.size[0].kind = .grow;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "grow-y")) {
+                n.size[1].kind = .grow;
+                return true;
+            }
+
+            if (std.mem.eql(u8, tok, "center")) {
+                n.@"align".x = .middle;
+                n.@"align".y = .middle;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "ax-start")) {
+                n.@"align".x = .begin;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "ax-center")) {
+                n.@"align".x = .middle;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "ax-end")) {
+                n.@"align".x = .end;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "ay-start")) {
+                n.@"align".y = .begin;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "ay-center")) {
+                n.@"align".y = .middle;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "ay-end")) {
+                n.@"align".y = .end;
+                return true;
+            }
+
+            // width — l'ordre compte : fit/grow puis min/max puis fixed
+            if (std.mem.eql(u8, tok, "w-fit")) {
+                n.size[0].kind = .fit;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "w-grow")) {
+                n.size[0].kind = .grow;
+                return true;
+            }
+            if (numOf(tok, "min-w-")) |v| {
+                n.size[0].min = v;
+                return true;
+            }
+            if (numOf(tok, "max-w-")) |v| {
+                n.size[0].max = v;
+                return true;
+            }
+            if (numOf(tok, "w-")) |v| {
+                n.size[0].kind = .fixed;
+                n.size[0].size = v;
+                return true;
+            }
+
+            // height
+            if (std.mem.eql(u8, tok, "h-fit")) {
+                n.size[1].kind = .fit;
+                return true;
+            }
+            if (std.mem.eql(u8, tok, "h-grow")) {
+                n.size[1].kind = .grow;
+                return true;
+            }
+            if (numOf(tok, "min-h-")) |v| {
+                n.size[1].min = v;
+                return true;
+            }
+            if (numOf(tok, "max-h-")) |v| {
+                n.size[1].max = v;
+                return true;
+            }
+            if (numOf(tok, "h-")) |v| {
+                n.size[1].kind = .fixed;
+                n.size[1].size = v;
+                return true;
+            }
+
+            // padding
+            if (numOf(tok, "px-")) |v| {
+                n.padding.left = v;
+                n.padding.right = v;
+                return true;
+            }
+            if (numOf(tok, "py-")) |v| {
+                n.padding.top = v;
+                n.padding.bottom = v;
+                return true;
+            }
+            if (numOf(tok, "pl-")) |v| {
+                n.padding.left = v;
+                return true;
+            }
+            if (numOf(tok, "pr-")) |v| {
+                n.padding.right = v;
+                return true;
+            }
+            if (numOf(tok, "pt-")) |v| {
+                n.padding.top = v;
+                return true;
+            }
+            if (numOf(tok, "pb-")) |v| {
+                n.padding.bottom = v;
+                return true;
+            }
+            if (numOf(tok, "p-")) |v| {
+                n.padding = .{ .left = v, .right = v, .top = v, .bottom = v };
+                return true;
+            }
+
+            // gap inter-enfants → ton champ `margin` (au passage : `spacing` n'est jamais lu dans compute)
+            if (numOf(tok, "gap-")) |v| {
+                n.margin = v;
+                return true;
+            }
+            return false;
+        }
+        fn validateClass(comptime s: []const u8) void {
+            @setEvalBranchQuota(10000);
+            var it = std.mem.tokenizeScalar(u8, s, ' ');
+            var n: N = .{};
+            while (it.next()) |tok| {
+                const ok = applyToken(tok, &n);
+                if (!ok) {
+                    @compileError("unknown ui class : '" ++ tok ++ "'");
+                }
+            }
+        }
+        fn parseClasses(s: []const u8, n: *N) void {
+            var it = std.mem.tokenizeScalar(u8, s, ' ');
+            while (it.next()) |tok| _ = applyToken(tok, n);
+        }
+
         pub const Spec = struct {
             classes: []const u8,
             painter: T = default_painter,
             children: []const @This() = &.{},
         };
 
-        pub fn node(comptime classes: []const u8, comptime painter: T, comptime children: []const Spec) Spec {
-            comptime {
-                var tmp = N{};
-                parseClasses(classes, &tmp);
-            }
+        pub fn node(comptime classes: []const u8, painter: T, children: []const Spec) Spec {
+            validateClass(classes);
             return .{ .classes = classes, .painter = painter, .children = children };
         }
 
-        pub fn leaf(comptime classes: []const u8, comptime painter: T) Spec {
-            comptime {
-                var tmp = N{};
-                parseClasses(classes, &tmp);
-            }
+        pub fn leaf(comptime classes: []const u8, painter: T) Spec {
+            validateClass(classes);
             return .{ .classes = classes, .painter = painter };
         }
 
-        pub fn build(comptime root: Spec) [count(root)]N {
-            return comptime blk: {
-                var nodes: [count(root)]N = undefined;
-                var cursor: usize = 0;
-                _ = fill(root, &nodes, &cursor);
-                break :blk nodes;
-            };
+        pub fn build(root: Spec, list: *std.array_list.Managed(N)) !void {
+            _ = try fill(root, list);
         }
 
-        fn count(comptime s: Spec) usize {
-            var total: usize = 1;
-            inline for (s.children) |c| total += count(c);
-            return total;
-        }
+        fn fill(s: Spec, list: *std.array_list.Managed(N)) !usize {
+            const me = list.items.len;
+            try list.append(N{ .painter = s.painter });
+            parseClasses(s.classes, &list.items[me]);
+            list.items[me].children_count = @intCast(s.children.len);
 
-        fn fill(comptime s: Spec, nodes: []N, cursor: *usize) usize {
-            const me = cursor.*;
-            cursor.* += 1;
-            var n = N{ .painter = s.painter };
-            parseClasses(s.classes, &n);
-            n.children_count = @intCast(s.children.len);
             var prev: ?usize = null;
-            inline for (s.children) |c| {
-                const cid = fill(c, nodes, cursor);
-                if (prev) |p| nodes[p].next = cid else n.first_children = cid;
+            for (s.children) |c| {
+                const cid = try fill(c, list);
+                if (prev) |p| list.items[p].next = cid else list.items[me].first_children = cid;
                 prev = cid;
             }
-            n.last_children = prev;
-            nodes[me] = n;
+            list.items[me].last_children = prev;
             return me;
         }
     };
@@ -260,13 +251,16 @@ test "ui dsl: structure et parsing des classes" {
     const root = comptime b.node("row gap-8 p-16 grow", .{}, &.{
         b.node("col gap-4 w-200", .{}, &.{
             b.leaf("w-100 h-50", .{ .kind = .img, .source = "100x50" }),
-            b.node("grow h-fit", &.{}),
+            b.node("grow h-fit", .{}, &.{}),
         }),
         b.node("ax-center ay-center grow", .{}, &.{
             b.leaf("w-64 h-64", .{ .kind = .img, .source = "64x64" }),
         }),
     });
-    const layout = b.build(root);
+    var list = std.array_list.Managed(ui.Node(DslPainter, .{})).init(t.allocator);
+    defer list.deinit();
+    try b.build(root, &list);
+    const layout = list.items;
 
     // pré-ordre + comptage
     try t.expectEqual(@as(usize, 6), layout.len);
@@ -319,12 +313,15 @@ test "ui dsl: bout-a-bout build + compute (noeud unique fixe)" {
     const b = Builder(DslPainter, .{});
 
     const root = comptime b.leaf("w-100 h-50", .{ .kind = .img, .source = "100x50" });
-    const layout = b.build(root);
+    var list = std.array_list.Managed(ui.Node(DslPainter, .{})).init(t.allocator);
+    defer list.deinit();
+    try b.build(root, &list);
+    const layout = list.items;
 
     var tree: ui.Tree(DslPainter, .{}) = .{};
     tree.init(t.allocator);
     defer tree.deinit();
-    try tree.nodes.appendSlice(&layout);
+    try tree.nodes.appendSlice(layout);
     try tree.compute(0);
 
     try t.expectEqual(@as(usize, 1), tree.commands.items.len);
